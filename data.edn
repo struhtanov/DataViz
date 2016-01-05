@@ -1,0 +1,20 @@
+[
+{:db/id #db/id[:db.part/user -1000011],
+  :entity/name "Project 1"
+}
+{:db/id #db/id[:db.part/user],
+  :entity/name "UserStory 11",
+  :entity/project #db/id[:db.part/user -1000011]
+}
+{:db/id #db/id[:db.part/user],
+  :entity/name "UserStory 12",
+  :entity/project #db/id[:db.part/user -1000011]
+}
+{:db/id #db/id[:db.part/user -1000012],
+  :entity/name "Project 1"
+}
+{:db/id #db/id[:db.part/user],
+  :entity/name "UserStory 21",
+  :entity/project #db/id[:db.part/user -1000012]
+}
+]
