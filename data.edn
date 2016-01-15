@@ -1,20 +1,25 @@
 [
 {:db/id #db/id[:db.part/user -1000011],
   :entity/name "Project 1"
+  :entity/type :entity.type/project
 }
 {:db/id #db/id[:db.part/user],
   :entity/name "UserStory 11",
   :entity/project #db/id[:db.part/user -1000011]
+  :entity/type :entity.type/userStory
 }
 {:db/id #db/id[:db.part/user],
   :entity/name "UserStory 12",
   :entity/project #db/id[:db.part/user -1000011]
+  :entity/type :entity.type/userStory
 }
 {:db/id #db/id[:db.part/user -1000012],
   :entity/name "Project 1"
+  :entity/type :entity.type/project
 }
 {:db/id #db/id[:db.part/user],
   :entity/name "UserStory 21",
   :entity/project #db/id[:db.part/user -1000012]
+  :entity/type :entity.type/userStory
 }
 ]

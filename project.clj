@@ -6,7 +6,9 @@
                  [datascript "0.13.0"]
                  [quiescent/quiescent "0.2.0-RC1"]
                  [cljs-http "0.1.38"]
-                 [cljsjs/fixed-data-table "0.4.1-0" :exclusions [cljsjs/react]]]
+                 [cljsjs/fixed-data-table "0.4.1-0" :exclusions [cljsjs/react]]
+                 [com.zachallaun/datomic-cljs "0.0.1-alpha-1"]
+                 ]
   :resource-paths ["resources" "lib"]
   :hooks [leiningen.cljsbuild]
   :cljsbuild {

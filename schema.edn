@@ -15,4 +15,17 @@
   :db/cardinality :db.cardinality/one
   :db/doc "Entity's project"
   :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :entity/type
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "Entity type"
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/user] :db/ident :entity.type/userStory}
+ {:db/id #db/id[:db.part/user] :db/ident :entity.type/project}
 ]
+
+
+
