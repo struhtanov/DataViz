@@ -2,81 +2,81 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [datomic-cljs.api :as d]
             [cljs.core.async :refer [<!]]
+            [cljs.core.async :refer [>!]]
             [dataviz.utils :as utils])
   )
 
 (enable-console-print!)
-
-(defn build-tp-db-schema
-  []
-  {
-   :db/id          {:db/axis :db.axis/none}
-   :entity/name    {:db/axis :db.axis/none :db/card :db.card/available}
-   :entity/project {:db/axis :db.axis/available :db/axis-name "project" :db/card :db.card/available}
-   :entity/type    {:db/axis :db.axis/none :db/card :db.card/available}
-   }
-  )
 
 (defn load-from-datomic
   []
   (go
     (let [conn (d/connect "localhost" 8001 "dev" "targetprocess")
           db (d/db conn)
-          entityIds (<! (d/q '[:find ?e :where [?e :entity/type :entity.type/userStory]]
+          entityIds (<! (d/q '[:find ?e ?projection-axis ?projection-value
+                               :where [?e :entity/axesProjections ?axes-projections]
+                               [?axes-projections :axisProjection/axis ?projection-axis]
+                               [?axes-projections :axisProjection/value ?projection-value]]
                              db))
 
-          entities (map (fn [[entityId]]
-                          (d/entity db entityId)
-                          ) entityIds)
+          grouped-by-entity-id (for [[entity-id axis-projection-vec] (group-by first entityIds)]
+                                 {:entity/id              entity-id
+                                  :entity/axesProjections (apply merge (map (fn [[entity-id projection-axis projection-value]]
+                                                                 {projection-axis projection-value}) axis-projection-vec))})
 
+          ;entities is a collection of channels
+          entities-channels (map (fn [entityId]
+                                   ;entity is a channel
+                                   (d/entity db entityId)
+                                   ) (->> entityIds (map #(first %)) distinct))
           ]
-      (<! (cljs.core.async/into [] (cljs.core.async/merge entities)))
+
+      (def entities (<! (cljs.core.async/into [] (cljs.core.async/merge entities-channels))))
+
+      (defn replace-projection-ids-with-values [entity] (update-in entity [:entity/axesProjections]
+                                                                   (fn [projections]
+                                                                     (def entity-id-with-projections (first (filter #(= (% :entity/id) (entity :db/id)) grouped-by-entity-id)))
+                                                                     (entity-id-with-projections :entity/axesProjections)
+                                                                     )))
+      (def res (map replace-projection-ids-with-values entities))
+      res
       )
     )
   )
 
+
+
 (defn get-possible-axes []
-  ;returns {:entity/project "project"}
-  (map (fn [[k v]] [k (:db/axis-name v)])
-       (filter
-         (fn [[k v]]
-           (= (:db/axis v) :db.axis/available))
-         (build-tp-db-schema))))
-
-(defn get-not-available-card-attributes []
-  (keys
-    (filter
-      (fn [[k v]]
-        (not= (:db/card v) :db.card/available))
-      (build-tp-db-schema))))
-
-(defn create-slice [data, x, y]
-  (defn get-axis [axis-id]
-    (def axis-values (distinct (map (fn [entity]
-                                      (get entity axis-id)
-                                      ) data)))
-    (cons (utils/get-none) (remove #(= % nil) axis-values))
-    )
-
-  (defn get-cells [x y]
-    (def cells-data (map (fn [c]
-                           (def cardData (apply dissoc c (keyword x) (keyword y) (get-not-available-card-attributes)))
-                           {
-                            :x    (utils/none-if-nil (get c (keyword x)) identity)
-                            :y    (utils/none-if-nil (get c (keyword y)) identity)
-                            :data cardData
-                            }
-                           )
-                         data
-                         )
+  (go
+    (let [conn (d/connect "localhost" 8001 "dev" "targetprocess")
+          db (d/db conn)
+          axes (<! (d/q '[:find ?axis ?axis-name
+                          :where [?axis :axis/name ?axis-name]]
+                        db))
+          ]
+      (into [[utils/no-axis-id "--- select axis ---"]] axes)
       )
-    cells-data
     )
-  (def xaxis (get-axis x))
-  (def yaxis (get-axis y))
-  (def cells (get-cells x y))
+  )
 
-
-  (def res {:xaxis {:id x :values xaxis} :yaxis {:id y :values yaxis} :cells cells})
-  res
+(defn get-axis-values [axis-id]
+  (print axis-id)
+  (if (= axis-id utils/no-axis-id)
+    (let [empty-channel (cljs.core.async/chan)]
+      (cljs.core.async/put! empty-channel [[utils/no-axis-value-id "No value"]])
+      empty-channel
+      )
+    (go
+      (let [conn (d/connect "localhost" 8001 "dev" "targetprocess")
+            db (d/db conn)
+            axis-values (<! (d/q '[:find ?e ?entity-name
+                                   :in $ ?axis-id
+                                   :where [?e :entity/axis ?axis-id]
+                                   [?e :entity/name ?entity-name]]
+                                 db, axis-id))
+            ]
+        axis-values
+        )
+      )
+    )
   )

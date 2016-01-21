@@ -1,8 +1,7 @@
 (ns dataviz.utils)
-(defn none-if-nil [v projector]
-	(if (nil? v) "none" (projector v))
-)
-(defn get-none [] "none")
-(defn none? [v] ( = v "none"))
+(defn no-value-if-nil [v projector]
+  (if (nil? v) no-axis-value-id (projector v))
+  )
+(def no-axis-id -1)
+(def no-axis-value-id -1)
 
-(defn keyword-to-str [k] (subs (str k) 1))

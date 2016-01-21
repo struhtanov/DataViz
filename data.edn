@@ -1,25 +1,90 @@
 [
-{:db/id #db/id[:db.part/user -1000011],
+ ;{:db/id       #db/id[:db.part/user -2000011],
+ ; :entity/name "Iteration 1"
+ ; :entity/type :entity.type/iteration
+ ; }
+ ;
+ ;{:db/id       #db/id[:db.part/user -2000012],
+ ; :entity/name "Iteration 2"
+ ; :entity/type :entity.type/iteration
+ ; }
+ ;
+ ;{:db/id       #db/id[:db.part/user -1000011],
+ ; :entity/name "Project 1"
+ ; :entity/type :entity.type/project
+ ; }
+ ;{:db/id            #db/id[:db.part/user],
+ ; :entity/name      "UserStory 11",
+ ; :entity/project   #db/id[:db.part/user -1000011]
+ ; :entity/iteration #db/id[:db.part/user -2000011]
+ ; :entity/type      :entity.type/userStory
+ ; }
+ ;{:db/id            #db/id[:db.part/user],
+ ; :entity/name      "UserStory 12",
+ ; :entity/project   #db/id[:db.part/user -1000011]
+ ; :entity/iteration #db/id[:db.part/user -2000012]
+ ; :entity/type      :entity.type/userStory
+ ; }
+ ;{:db/id       #db/id[:db.part/user -1000012],
+ ; :entity/name "Project 1"
+ ; :entity/type :entity.type/project
+ ; }
+ ;{:db/id          #db/id[:db.part/user],
+ ; :entity/name    "UserStory 21",
+ ; :entity/project #db/id[:db.part/user -1000012]
+ ; :entity/type    :entity.type/userStory
+ ; }
+
+ {:db/id     #db/id[:db.part/user -101],
+  :axis/name "Project Axis"
+  }
+
+ {:db/id     #db/id[:db.part/user -102],
+  :axis/name "Iteration Axis"
+  }
+
+ {:db/id       #db/id[:db.part/user -201],
   :entity/name "Project 1"
-  :entity/type :entity.type/project
-}
-{:db/id #db/id[:db.part/user],
-  :entity/name "UserStory 11",
-  :entity/project #db/id[:db.part/user -1000011]
-  :entity/type :entity.type/userStory
-}
-{:db/id #db/id[:db.part/user],
-  :entity/name "UserStory 12",
-  :entity/project #db/id[:db.part/user -1000011]
-  :entity/type :entity.type/userStory
-}
-{:db/id #db/id[:db.part/user -1000012],
-  :entity/name "Project 1"
-  :entity/type :entity.type/project
-}
-{:db/id #db/id[:db.part/user],
-  :entity/name "UserStory 21",
-  :entity/project #db/id[:db.part/user -1000012]
-  :entity/type :entity.type/userStory
-}
-]
+  :entity/axis #db/id[:db.part/user -101]
+  }
+
+ {:db/id       #db/id[:db.part/user -202],
+  :entity/name "Project 2"
+  :entity/axis #db/id[:db.part/user -101]
+  }
+
+ {:db/id       #db/id[:db.part/user -203],
+  :entity/name "Project 3"
+  :entity/axis #db/id[:db.part/user -101]
+  }
+
+ {:db/id       #db/id[:db.part/user -204],
+  :entity/name "Iteration 1"
+  :entity/axis #db/id[:db.part/user -102]
+  }
+
+ {:db/id       #db/id[:db.part/user -205],
+  :entity/name "Iteration 2"
+  :entity/axis #db/id[:db.part/user -102]
+  }
+
+ {:db/id                  #db/id[:db.part/user -301],
+  :entity/name            "User Story 1"
+  :entity/axesProjections [{:db/id                #db/id[:db.part/user -401],
+                            :axisProjection/axis  #db/id[:db.part/user -101],
+                            :axisProjection/value #db/id[:db.part/user -201]}
+                           {:db/id                #db/id[:db.part/user -402],
+                            :axisProjection/axis  #db/id[:db.part/user -102],
+                            :axisProjection/value #db/id[:db.part/user -204]}]
+  }
+
+ {:db/id                  #db/id[:db.part/user -302],
+  :entity/name            "User Story 2"
+  :entity/axesProjections [{:db/id                #db/id[:db.part/user -403],
+                            :axisProjection/axis  #db/id[:db.part/user -101],
+                            :axisProjection/value #db/id[:db.part/user -202]}
+                           {:db/id                #db/id[:db.part/user -404],
+                            :axisProjection/axis  #db/id[:db.part/user -102],
+                            :axisProjection/value #db/id[:db.part/user -205]}]
+  }
+ ]

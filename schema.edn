@@ -1,6 +1,48 @@
 [
  ;; Entity
 
+ ;{:db/id #db/id[:db.part/db]
+ ; :db/ident :entity/name
+ ; :db/valueType :db.type/string
+ ; :db/cardinality :db.cardinality/one
+ ; :db/fulltext true
+ ; :db/doc "Entity name"
+ ; :db.install/_attribute :db.part/db}
+ ;
+ ;{:db/id #db/id[:db.part/db]
+ ; :db/ident :axis/value
+ ; :db/valueType :db.type/ref
+ ; :db/cardinality :db.cardinality/one
+ ; :db/fulltext true
+ ; :db/doc "Entity name"
+ ; :db.install/_attribute :db.part/db}
+ ;
+ ;{:db/id #db/id[:db.part/db]
+ ; :db/ident :entity/project
+ ; :db/valueType :db.type/ref
+ ; :db/cardinality :db.cardinality/one
+ ; :db/doc "Entity's project"
+ ; :db.install/_attribute :db.part/db}
+ ;
+ ;{:db/id #db/id[:db.part/db]
+ ; :db/ident :entity/iteration
+ ; :db/valueType :db.type/ref
+ ; :db/cardinality :db.cardinality/one
+ ; :db/doc "Entity's iteration"
+ ; :db.install/_attribute :db.part/db}
+ ;
+ ;{:db/id #db/id[:db.part/db]
+ ; :db/ident :entity/type
+ ; :db/valueType :db.type/ref
+ ; :db/cardinality :db.cardinality/one
+ ; :db/doc "Entity type"
+ ; :db.install/_attribute :db.part/db}
+ ;
+ ;{:db/id #db/id[:db.part/user] :db/ident :entity.type/userStory}
+ ;{:db/id #db/id[:db.part/user] :db/ident :entity.type/project}
+ ;{:db/id #db/id[:db.part/user] :db/ident :entity.type/iteration}
+
+ ;--------------------------------------------------------------------------
  {:db/id #db/id[:db.part/db]
   :db/ident :entity/name
   :db/valueType :db.type/string
@@ -10,22 +52,37 @@
   :db.install/_attribute :db.part/db}
 
  {:db/id #db/id[:db.part/db]
-  :db/ident :entity/project
-  :db/valueType :db.type/ref
+  :db/ident :axis/name
+  :db/valueType :db.type/string
   :db/cardinality :db.cardinality/one
-  :db/doc "Entity's project"
+  :db/doc "Axis name"
   :db.install/_attribute :db.part/db}
 
  {:db/id #db/id[:db.part/db]
-  :db/ident :entity/type
+  :db/ident :entity/axis
   :db/valueType :db.type/ref
   :db/cardinality :db.cardinality/one
-  :db/doc "Entity type"
+  :db/doc "Axis to which entity belongs"
   :db.install/_attribute :db.part/db}
 
- {:db/id #db/id[:db.part/user] :db/ident :entity.type/userStory}
- {:db/id #db/id[:db.part/user] :db/ident :entity.type/project}
+ {:db/id #db/id[:db.part/db]
+  :db/ident :entity/axesProjections
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/many
+  :db/doc "Axes projections values for entity"
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :axisProjection/value
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "Value in axis for entity (projection value)"
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :axisProjection/axis
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "Axis to which this projection corresponds (maybe this is redundant?)"
+  :db.install/_attribute :db.part/db}
 ]
-
-
-

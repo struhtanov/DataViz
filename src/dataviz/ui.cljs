@@ -26,7 +26,7 @@
 
 (q/defcomponent Option
                 [item is-selected?]
-                (d/option {:value (utils/keyword-to-str (item 0)) :selected is-selected?}
+                (d/option {:value (item 0) :selected is-selected?}
                           (item 1)
                           )
                 )
@@ -56,7 +56,7 @@
 (q/defcomponent Card
                 [cardData]
                 (d/div {:className "card"}
-                       (map #(d/div {} (name %1)) (vals cardData))
+                       (map #(d/div {} (str %1)) (vals cardData))
                        )
                 )
 
@@ -74,15 +74,15 @@
                                   "Select "
                                   (Selector {
                                              :items    (:xs full-state)
-                                             :value    (:x? full-state)
-                                             :onChange #((:update full-state) %1 (:y? full-state))
+                                             :value    (:x-id full-state)
+                                             :onChange #((:update full-state) (js/parseInt %1) (:y-id full-state))
                                              })
                                   " as X \u2192"
                                   " and "
                                   (Selector {
                                              :items    (:ys full-state)
-                                             :value    (:y? full-state)
-                                             :onChange #((:update full-state) (:x? full-state) %1)
+                                             :value    (:y-id full-state)
+                                             :onChange #((:update full-state) (:x-id full-state) (js/parseInt %1))
                                              })
                                   " as Y \u2193"
                                   )
@@ -91,9 +91,9 @@
 (defn getter [k row]
   (nth row k))
 
-(defn prepare-column [indx label]
+(defn prepare-column [indx col-name]
   (Column #js {
-               :label          label
+               :label          col-name
                :fixed          true
                :dataKey        indx
                :cellDataGetter getter
@@ -108,24 +108,29 @@
                 (def row-height (/ doc-height (count (:yvalues full-state))))
                 (def doc-width (.-clientWidth js/document.body))
                 (def col-width (/ (- doc-width 16) (+ (count (:xvalues full-state)) 1)))
+
+                (defn get-axis-value-name [axis-value] (axis-value 1))
+                (defn get-axis-value-id [axis-value] (axis-value 0))
+
                 (def column-labels
-                  (conj (:xvalues full-state)
-                        (str (:y? full-state) "/" (:x? full-state))))
+                  (into [(str (:y-name full-state) "/" (:x-name full-state))]
+                        (map get-axis-value-name (:xvalues full-state))
+                        ))
 
                 (def columns (map-indexed prepare-column column-labels))
                 (defn get-row [k]
-
                   (def x-vals (:xvalues full-state))
                   (def y-vals (:yvalues full-state))
                   (def cells (:cells full-state))
 
-                  (def row-id (nth y-vals k))
+                  (def row-id (get-axis-value-id (nth y-vals k)))
+                  (def row-name (get-axis-value-name (nth y-vals k)))
                   (def row-cells (doall (filter #(= (:y %) row-id) cells)))
 
-                  (def row (doall (map (fn [col-id]
-                                         (filter #(= (:x %) col-id) row-cells))
+                  (def row (doall (map (fn [x-val]
+                                         (filter #(= (:x %) (get-axis-value-id x-val)) row-cells))
                                        x-vals)))
-                  (conj row row-id)
+                  (into [row-name] row)
                   )
                 (d/section {:id "panel-result"}
                            (Table
@@ -155,12 +160,14 @@
                        ))
 
 (defn get-board-state
-  [schema data trigger-update]
+  [axes-meta data trigger-update]
   {
-   :xs      (conj schema [:none "--- select axis ---"])
-   :ys      (conj schema [:none "--- select axis ---"])
-   :x?      (:id (:xaxis data))
-   :y?      (:id (:yaxis data))
+   :xs      axes-meta
+   :ys      axes-meta
+   :x-id    (:id (:xaxis data))
+   :x-name  (:name (:xaxis data))
+   :y-id    (:id (:yaxis data))
+   :y-name  (:name (:yaxis data))
    :xvalues (:values (:xaxis data))
    :yvalues (:values (:yaxis data))
    :cells   (:cells data)
@@ -191,9 +198,8 @@
                        ))
 
 (defn render-board
-  [schema data trigger-update]
-  (def board-state (get-board-state schema data trigger-update))
-  (print (board-state :xs))
+  [axes-meta data trigger-update]
+  (def board-state (get-board-state axes-meta data trigger-update))
   (q/render (Board board-state) js/document.body))
 
 (defn render-home
